@@ -1,6 +1,7 @@
 import e, { Request, Response } from 'express';
 import messageModel from '../models/message.model';
 import { Telegram } from '../interfaces/telegram.interface';
+import { stat } from 'fs';
 const BOT = process.env.BOT_TOKEN;
 
 export async function sendMessage (req: Request, res: Response) {
@@ -24,10 +25,14 @@ export async function sendMessage (req: Request, res: Response) {
       result.push({ delivered: false, id: user.userId });
     }
   }
-
+  let status = 201, ok = true;
   if (result.some(item => item.delivered === false)) {
-    return res.send({ ok: false, status: 207, result });
-  } else {
-    return res.send({ ok: true, status: 201, result });
+    ok = false;
+    if (data.length > 1) {
+      status = 207;
+    } else {
+      status = 400;
+    }
   }
+  return res.send({ ok, status, result });
 }
