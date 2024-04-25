@@ -6,7 +6,7 @@ const BOT = process.env.BOT_TOKEN;
 export async function sendMessage (req: Request, res: Response) {
   const { data, message }: Telegram = req.body;
   if (!data || !message) {
-    return res.send({ ok: false, status: 'Data and message are required' });
+    return res.send({ ok: false, status: 400 });
   }
   const result: { delivered: boolean, id: string }[] = []
   for (const user of data) {
@@ -26,8 +26,8 @@ export async function sendMessage (req: Request, res: Response) {
   }
 
   if (result.some(item => item.delivered === false)) {
-    return res.send({ ok: false, status: 'Error sending message to some users', result });
+    return res.send({ ok: false, status: 207, result });
   } else {
-    return res.send({ ok: true, status: 'Message sent', result });
+    return res.send({ ok: true, status: 201, result });
   }
 }
